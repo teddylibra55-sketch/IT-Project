@@ -1,23 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../services/AuthContext';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const JobDetails = () => {
   const { id } = useParams();
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showApplicationForm, setShowApplicationForm] = useState(false);
-  const [applicationLoading, setApplicationLoading] = useState(false);
-  const [applicationData, setApplicationData] = useState({
-    applicant_name: '',
-    applicant_email: '',
-    applicant_phone: '',
-    cover_letter: ''
-  });
 
   useEffect(() => {
     fetchJob();
@@ -35,49 +25,6 @@ const JobDetails = () => {
     }
   };
 
-  const handleApplicationChange = (e) => {
-    setApplicationData({
-      ...applicationData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleApplicationSubmit = async (e) => {
-    e.preventDefault();
-    setApplicationLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append('applicant_name', applicationData.applicant_name);
-      formData.append('applicant_email', applicationData.applicant_email);
-      formData.append('applicant_phone', applicationData.applicant_phone);
-      formData.append('cover_letter', applicationData.cover_letter);
-
-      const resumeFile = e.target.resume.files[0];
-      if (resumeFile) {
-        formData.append('resume', resumeFile);
-      }
-
-      await axios.post(`/api/jobs/${id}/apply`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      toast.success('Application submitted successfully!');
-      setShowApplicationForm(false);
-      setApplicationData({
-        applicant_name: '',
-        applicant_email: '',
-        applicant_phone: '',
-        cover_letter: ''
-      });
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to submit application');
-    } finally {
-      setApplicationLoading(false);
-    }
-  };
 
   const getJobTypeClass = (type) => {
     switch (type) {
@@ -151,7 +98,7 @@ const JobDetails = () => {
               )}
               <div className="job-meta-item">
                 <i className="fas fa-user"></i>
-                <span>Posted by {job.posted_by_name || 'Anonymous'}</span>
+                <span>Posted by JOBIFY</span>
               </div>
             </div>
           </div>
@@ -177,112 +124,12 @@ const JobDetails = () => {
           </div>
 
           <div className="job-actions">
-            <button
-              className="btn btn-primary"
-              onClick={() => setShowApplicationForm(!showApplicationForm)}
-            >
+            <Link to={`/job/${id}/apply`} className="btn btn-primary">
               <i className="fas fa-paper-plane"></i>
               Apply for this Job
-            </button>
+            </Link>
           </div>
         </div>
-
-        {showApplicationForm && (
-          <div className="card application-form">
-            <h3>Apply for this Position</h3>
-            <form onSubmit={handleApplicationSubmit}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Full Name *</label>
-                  <input
-                    type="text"
-                    name="applicant_name"
-                    className="form-control"
-                    placeholder="Your full name"
-                    value={applicationData.applicant_name}
-                    onChange={handleApplicationChange}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Email Address *</label>
-                  <input
-                    type="email"
-                    name="applicant_email"
-                    className="form-control"
-                    placeholder="your.email@example.com"
-                    value={applicationData.applicant_email}
-                    onChange={handleApplicationChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Phone Number</label>
-                <input
-                  type="tel"
-                  name="applicant_phone"
-                  className="form-control"
-                  placeholder="Your phone number"
-                  value={applicationData.applicant_phone}
-                  onChange={handleApplicationChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Resume (PDF, DOC, DOCX)</label>
-                <input
-                  type="file"
-                  name="resume"
-                  className="form-control"
-                  accept=".pdf,.doc,.docx"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Cover Letter *</label>
-                <textarea
-                  name="cover_letter"
-                  className="form-control"
-                  rows="6"
-                  placeholder="Tell us why you're interested in this position and what makes you a great fit..."
-                  value={applicationData.cover_letter}
-                  onChange={handleApplicationChange}
-                  required
-                />
-              </div>
-
-              <div className="form-actions">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowApplicationForm(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-success"
-                  disabled={applicationLoading}
-                >
-                  {applicationLoading ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin"></i>
-                      Submitting...
-                    </>
-                  ) : (
-                    <>
-                      <i className="fas fa-paper-plane"></i>
-                      Submit Application
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
       </div>
 
       <style jsx>{`
@@ -328,39 +175,6 @@ const JobDetails = () => {
           text-align: center;
           padding-top: 24px;
           border-top: 2px solid #f8f9fa;
-        }
-        
-        .application-form {
-          margin-top: 24px;
-          background: #f8f9fa;
-        }
-        
-        .form-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 20px;
-        }
-        
-        .form-actions {
-          display: flex;
-          gap: 16px;
-          justify-content: flex-end;
-          margin-top: 30px;
-        }
-        
-        textarea.form-control {
-          resize: vertical;
-          min-height: 120px;
-        }
-        
-        @media (max-width: 768px) {
-          .form-row {
-            grid-template-columns: 1fr;
-          }
-          
-          .form-actions {
-            flex-direction: column;
-          }
         }
       `}</style>
     </div>

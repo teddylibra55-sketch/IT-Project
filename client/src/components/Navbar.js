@@ -16,33 +16,27 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="container">
-        <div className="nav-content">
+      <div className="nav-content">
           <Link to="/" className="nav-brand">
-            <i className="fas fa-code"></i>
-            IT Jobs
+            <img src="/logo.png" alt="JOBIFY Marketplace" className="logo-img" />
           </Link>
           
           <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
             <Link to="/" className="nav-link">Home</Link>
             
             {user ? (
-              <>
-                <Link to="/post-job" className="nav-link">Post Job</Link>
-                <Link to="/my-jobs" className="nav-link">My Jobs</Link>
-                <div className="nav-dropdown">
-                  <span className="nav-link dropdown-toggle">
-                    <i className="fas fa-user"></i>
-                    {user.name}
-                  </span>
-                  <div className="dropdown-menu">
-                    <button onClick={handleLogout} className="dropdown-item">
-                      <i className="fas fa-sign-out-alt"></i>
-                      Logout
-                    </button>
-                  </div>
+              <div className="nav-dropdown">
+                <span className="nav-link dropdown-toggle">
+                  <i className="fas fa-user"></i>
+                  {user.name}
+                </span>
+                <div className="dropdown-menu">
+                  <button onClick={handleLogout} className="dropdown-item">
+                    <i className="fas fa-sign-out-alt"></i>
+                    Logout
+                  </button>
                 </div>
-              </>
+              </div>
             ) : (
               <>
                 <Link to="/login" className="nav-link">Login</Link>
@@ -58,7 +52,6 @@ const Navbar = () => {
             <i className="fas fa-bars"></i>
           </button>
         </div>
-      </div>
       
       <style jsx>{`
         .navbar {
@@ -70,14 +63,17 @@ const Navbar = () => {
           left: 0;
           right: 0;
           z-index: 1000;
-          height: 80px;
+          height: 100px;
         }
         
         .nav-content {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          height: 80px;
+          height: 100px;
+          padding: 0;
+          max-width: 100%;
+          width: 100%;
         }
         
         .nav-brand {
@@ -88,33 +84,47 @@ const Navbar = () => {
           display: flex;
           align-items: center;
           gap: 10px;
+          height: 100%;
+          margin-left: 0;
+          padding-left: 20px;
         }
         
-        .nav-brand i {
-          font-size: 28px;
+        .logo-img {
+          height: 90px;
+          max-height: 90px;
+          width: auto;
+          object-fit: contain;
+          display: block;
         }
         
         .nav-menu {
           display: flex;
           align-items: center;
           gap: 30px;
+          padding-right: 20px;
         }
         
         .nav-link {
-          color: #333;
+          color: #667eea;
           text-decoration: none;
-          font-weight: 500;
+          font-weight: 600;
           padding: 8px 16px;
           border-radius: 6px;
           transition: all 0.2s ease;
           display: flex;
           align-items: center;
           gap: 8px;
+          cursor: pointer;
         }
         
         .nav-link:hover {
-          background: rgba(102, 126, 234, 0.1);
-          color: #667eea;
+          background: rgba(102, 126, 234, 0.15);
+          color: #5568d3;
+          transform: translateY(-1px);
+        }
+        
+        .nav-link:active {
+          transform: translateY(0);
         }
         
         .nav-dropdown {
@@ -175,9 +185,22 @@ const Navbar = () => {
         }
         
         @media (max-width: 768px) {
+          .navbar {
+            height: 90px;
+          }
+          
+          .nav-content {
+            height: 90px;
+          }
+          
+          .logo-img {
+            height: 75px;
+            max-height: 75px;
+          }
+          
           .nav-menu {
             position: fixed;
-            top: 80px;
+            top: 90px;
             left: 0;
             right: 0;
             background: white;

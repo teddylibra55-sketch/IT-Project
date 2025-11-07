@@ -60,8 +60,8 @@ const Home = () => {
   return (
     <div className="container">
       <div className="hero-section">
-        <h1>Find Your Dream IT Job</h1>
-        <p>Discover amazing opportunities in the tech industry</p>
+        <h1>Jobify: Where Your IT Career Dreams Come True</h1>
+        <p>Transform your career aspirations into reality. Connect with top tech companies and discover opportunities that match your passion and expertise</p>
       </div>
 
       <div className="search-filters">
@@ -156,7 +156,7 @@ const Home = () => {
 
               <div className="d-flex justify-content-between align-items-center">
                 <span className="text-muted">
-                  Posted by {job.posted_by_name || 'Anonymous'}
+                  Posted by JOBIFY
                 </span>
                 <Link to={`/job/${job.id}`} className="btn btn-primary">
                   View Details

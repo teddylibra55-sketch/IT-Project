@@ -57,7 +57,7 @@ const Register = () => {
         <div className="card auth-card">
           <div className="text-center mb-4">
             <h1>Create Account</h1>
-            <p className="text-muted">Join our IT jobs platform</p>
+            <p className="text-muted">Create an account to get started</p>
           </div>
 
           <form onSubmit={handleSubmit}>

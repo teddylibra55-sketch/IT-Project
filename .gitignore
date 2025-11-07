@@ -1,1 +1,7 @@
 node_modules
+.env
+jobs.db
+uploads/
+client/build/
+*.log
+.DS_Store

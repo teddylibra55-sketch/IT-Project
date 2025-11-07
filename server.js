@@ -56,10 +56,18 @@ db.serialize(() => {
     applicant_phone TEXT,
     cover_letter TEXT,
     resume_filename TEXT,
+    past_jobs TEXT,
+    experience TEXT,
+    goals TEXT,
     status TEXT DEFAULT 'pending',
     applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (job_id) REFERENCES jobs (id)
   )`);
+  
+  // Add new columns if they don't exist (for existing databases)
+  db.run(`ALTER TABLE applications ADD COLUMN past_jobs TEXT`, () => {});
+  db.run(`ALTER TABLE applications ADD COLUMN experience TEXT`, () => {});
+  db.run(`ALTER TABLE applications ADD COLUMN goals TEXT`, () => {});
 });
 
 // File upload configuration
@@ -240,10 +248,13 @@ app.post('/api/jobs', authenticateToken, [
 
   const { title, company, location, job_type, description, requirements, salary_range } = req.body;
 
+  // Always set company name as "Jobify"
+  const companyName = 'JOBIFY';
+
   db.run(`
     INSERT INTO jobs (title, company, location, job_type, description, requirements, salary_range, posted_by)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `, [title, company, location, job_type, description, requirements, salary_range, req.user.id], function(err) {
+  `, [title, companyName, location, job_type, description, requirements, salary_range, req.user.id], function(err) {
     if (err) {
       return res.status(500).json({ message: 'Database error' });
     }
@@ -260,16 +271,24 @@ app.post('/api/jobs/:id/apply', upload.single('resume'), [
   body('applicant_name').trim().isLength({ min: 2 }),
   body('applicant_email').isEmail().normalizeEmail(),
   body('applicant_phone').optional().trim(),
-  body('cover_letter').trim().isLength({ min: 50 })
+  body('cover_letter').trim().isLength({ min: 50 }),
+  body('past_jobs').optional().trim(),
+  body('experience').optional().trim(),
+  body('goals').optional().trim()
 ], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
+  // Check if resume is uploaded (required)
+  if (!req.file) {
+    return res.status(400).json({ message: 'Resume is required. Please upload your resume.' });
+  }
+
   const jobId = req.params.id;
-  const { applicant_name, applicant_email, applicant_phone, cover_letter } = req.body;
-  const resume_filename = req.file ? req.file.filename : null;
+  const { applicant_name, applicant_email, applicant_phone, cover_letter, past_jobs, experience, goals } = req.body;
+  const resume_filename = req.file.filename;
 
   // Check if job exists
   db.get('SELECT id FROM jobs WHERE id = ?', [jobId], (err, job) => {
@@ -283,9 +302,9 @@ app.post('/api/jobs/:id/apply', upload.single('resume'), [
 
     // Insert application
     db.run(`
-      INSERT INTO applications (job_id, applicant_name, applicant_email, applicant_phone, cover_letter, resume_filename)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `, [jobId, applicant_name, applicant_email, applicant_phone, cover_letter, resume_filename], function(err) {
+      INSERT INTO applications (job_id, applicant_name, applicant_email, applicant_phone, cover_letter, resume_filename, past_jobs, experience, goals)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [jobId, applicant_name, applicant_email, applicant_phone, cover_letter, resume_filename, past_jobs || '', experience || '', goals || ''], function(err) {
       if (err) {
         return res.status(500).json({ message: 'Database error' });
       }

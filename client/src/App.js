@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import PostJob from './pages/PostJob';
 import JobDetails from './pages/JobDetails';
+import ApplyJob from './pages/ApplyJob';
 import MyJobs from './pages/MyJobs';
 import JobApplications from './pages/JobApplications';
 import { AuthProvider } from './services/AuthContext';
@@ -27,6 +28,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/post-job" element={<PostJob />} />
               <Route path="/job/:id" element={<JobDetails />} />
+              <Route path="/job/:id/apply" element={<ApplyJob />} />
               <Route path="/my-jobs" element={<MyJobs />} />
               <Route path="/job/:id/applications" element={<JobApplications />} />
             </Routes>
